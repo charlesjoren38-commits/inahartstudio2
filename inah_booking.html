@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Book a Session — Inah Art Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080808;--surface:#111;--s2:#161616;
+  --border:#1e1e1e;--b2:#2a2a2a;
+  --text:#f0ede8;--muted:#555;--soft:#888;
+  --green:#4ade80;--gdim:#0d1f12;
+  --red:#f87171;--rdim:#1f0d0d;
+  --allura:'Allura',cursive;
+  --cg:'Cormorant Garamond',serif;
+  --sans:'Helvetica Neue',Arial,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--cg);min-height:100vh;overflow-x:hidden}
+button{cursor:pointer}
+a{color:var(--text);text-decoration:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes grow{to{width:100%}}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+/* LOADER */
+.loader{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;transition:opacity .7s,visibility .7s}
+.loader.gone{opacity:0;visibility:hidden;pointer-events:none}
+.ls{font-family:var(--allura);font-size:5.5rem;color:#fff;animation:fadeUp .8s ease both}
+.lsub{font-family:var(--sans);font-size:.52rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.2);animation:fadeIn .6s .3s ease both}
+.lbar{width:70px;height:.5px;background:rgba(255,255,255,.1);overflow:hidden}
+.lbar-f{height:100%;background:#fff;width:0;animation:grow .9s .4s ease forwards}
+
+/* HEADER */
+header{background:rgba(8,8,8,.97);border-bottom:.5px solid var(--border);padding:1rem 1.75rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.logo{display:flex;flex-direction:column;align-items:center;gap:1px}
+.logo-s{font-family:var(--allura);font-size:2rem;color:var(--text);line-height:.85}
+.logo-r{display:flex;align-items:center;gap:5px}
+.logo-r span{height:.5px;width:16px;background:rgba(240,237,232,.2);display:block}
+.logo-r i{font-style:normal;font-size:4px;color:rgba(240,237,232,.25)}
+.logo-w{font-family:var(--cg);font-size:.4rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(240,237,232,.22);font-weight:300}
+.hdr-right{display:flex;align-items:center;gap:1rem}
+.hdr-info p{font-family:var(--sans);font-size:.56rem;color:var(--muted);line-height:1.65;text-align:right}
+.live-badge{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--sans);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(74,222,128,.5);margin-top:.2rem;justify-content:flex-end}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite}
+.admin-btn{background:none;border:.5px solid var(--b2);padding:.4rem .85rem;font-family:var(--sans);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+.admin-btn:hover{border-color:rgba(240,237,232,.2);color:var(--text)}
+
+/* FLOAT */
+.float-msg{position:fixed;bottom:1.75rem;right:1.75rem;z-index:300;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+.float-tip{background:var(--surface);border:.5px solid var(--b2);padding:.5rem .85rem;font-family:var(--sans);font-size:.6rem;color:var(--muted);white-space:nowrap;transition:opacity .5s}
+.float-bubble{width:52px;height:52px;background:#0078ff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,120,255,.35);transition:transform .2s}
+.float-bubble:hover{transform:scale(1.08)}
+.float-bubble svg{width:26px;height:26px;fill:#fff}
+
+/* MAIN */
+main{max-width:660px;margin:0 auto;padding:2.5rem 1.5rem 6rem}
+.view{display:none}
+.view.active{display:block;animation:fadeIn .4s ease both}
+
+/* TABS */
+.nav-tabs{display:flex;border-bottom:.5px solid var(--border);margin-bottom:2rem;overflow-x:auto}
+.nav-tab{font-family:var(--sans);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:.75rem 1.25rem;border-bottom:1.5px solid transparent;transition:all .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
+.nav-tab:hover{color:var(--soft)}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--text)}
+
+/* TITLES */
+.eyebrow{font-family:var(--sans);font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.page-title{font-family:var(--cg);font-size:1.9rem;font-style:italic;font-weight:300;color:var(--text);margin-bottom:.35rem;line-height:1.15}
+.page-title strong{font-style:normal;font-weight:500}
+.page-sub{font-family:var(--sans);font-size:.68rem;color:var(--muted);line-height:1.7;margin-bottom:2rem}
+
+/* CAL NAV */
+.cal-nav{display:flex;align-items:center;gap:.75rem;margin-bottom:1.1rem}
+.cal-nav button{background:var(--surface);border:.5px solid var(--b2);width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.85rem;transition:all .2s;flex-shrink:0}
+.cal-nav button:hover{border-color:rgba(240,237,232,.25);color:var(--text)}
+.cal-date-main{font-family:var(--cg);font-size:1.1rem;font-style:italic;color:var(--text)}
+.cal-date-sub{font-family:var(--sans);font-size:.54rem;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+
+/* WEEK STRIP — 6 cols Mon–Sat */
+.week-strip{display:grid;grid-template-columns:repeat(6,1fr);gap:.3rem;margin-bottom:1.6rem}
+.wd{text-align:center;padding:.55rem .2rem;border:.5px solid var(--border);background:var(--surface);transition:all .2s}
+.wd.sel{border-color:var(--text);background:var(--text)}
+.wd.sel .wdn,.wd.sel .wdnum{color:#080808}
+.wd.past{opacity:.25;pointer-events:none}
+.wd.blocked{background:var(--rdim);border-color:rgba(248,113,113,.2)}
+.wd:not(.past):not(.sel):not(.blocked):hover{border-color:rgba(240,237,232,.2);background:var(--s2)}
+.wdn{font-family:var(--sans);font-size:.46rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.2rem}
+.wdnum{font-family:var(--cg);font-size:.95rem;font-style:italic;color:var(--text);display:block;line-height:1}
+.wddots{display:flex;justify-content:center;gap:2px;margin-top:.25rem;min-height:5px}
+.wddots span{width:4px;height:4px;border-radius:50%;background:rgba(74,222,128,.45)}
+.wddots span.bk{background:rgba(240,237,232,.12)}
+.wddots span.bl{background:rgba(248,113,113,.35)}
+
+/* SLOTS */
+.slots-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.slots-lbl{font-family:var(--sans);font-size:.54rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.legend{display:flex;gap:.65rem}
+.leg{display:flex;align-items:center;gap:.3rem;font-family:var(--sans);font-size:.5rem;color:var(--muted)}
+.leg-dot{width:6px;height:6px;border-radius:50%}
+.leg-dot.av{background:rgba(74,222,128,.5)}
+.leg-dot.bk{background:rgba(240,237,232,.1)}
+.leg-dot.bl{background:rgba(248,113,113,.35)}
+
+.slots-grid{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin-bottom:.5rem}
+.sc{border:.5px solid var(--b2);background:var(--surface);padding:1rem 1.15rem;display:flex;align-items:center;justify-content:space-between;transition:all .25s;position:relative;overflow:hidden}
+.sc.av:hover{border-color:rgba(74,222,128,.35);background:rgba(13,31,18,.6)}
+.sc.av-sel{border-color:rgba(74,222,128,.6);background:var(--gdim)}
+.sc.bk{background:var(--bg);pointer-events:none}
+.sc.bk::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(240,237,232,.012) 4px,rgba(240,237,232,.012) 5px)}
+.sc.bl{background:var(--rdim);border-color:rgba(248,113,113,.15);pointer-events:none}
+.sc-time{font-family:var(--cg);font-size:1rem;font-style:italic;color:var(--text)}
+.sc.bk .sc-time,.sc.bl .sc-time{color:#2a2a2a}
+.sc-status{font-family:var(--sans);font-size:.48rem;letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:.3rem}
+.sc-status .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.av .dot{background:rgba(74,222,128,.6);animation:pulse 2.5s ease-in-out infinite}
+.av .stxt{color:rgba(74,222,128,.7)}
+.av-sel .dot{background:var(--green)}
+.av-sel .stxt{color:var(--green)}
+.bk .dot{background:rgba(240,237,232,.08)}
+.bk .stxt{color:#2a2a2a}
+.bl .dot{background:rgba(248,113,113,.4)}
+.bl .stxt{color:rgba(248,113,113,.6)}
+
+/* BANNER */
+.sel-banner{background:var(--gdim);border:.5px solid rgba(74,222,128,.2);padding:.8rem 1rem;margin-bottom:1.25rem;display:none;align-items:center;justify-content:space-between}
+.sel-banner.show{display:flex;animation:fadeUp .3s ease both}
+.sb-txt{font-family:var(--sans);font-size:.6rem;color:rgba(74,222,128,.8)}
+.sb-txt strong{color:var(--green)}
+.sb-clr{background:none;border:none;font-family:var(--sans);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(74,222,128,.4);transition:color .2s;padding:0}
+.sb-clr:hover{color:rgba(74,222,128,.8)}
+
+/* FORM */
+.form-wrap{margin-top:2rem;padding-top:1.75rem;border-top:.5px solid var(--border);display:none}
+.form-eyebrow{font-family:var(--sans);font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.1rem}
+.field{margin-bottom:.9rem}
+.field label{display:block;font-family:var(--sans);font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.38rem}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:.5px solid var(--b2);color:var(--text);padding:.75rem .95rem;font-family:var(--cg);font-size:.95rem;outline:none;transition:border-color .2s;border-radius:0}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(240,237,232,.28)}
+.field input::placeholder,.field textarea::placeholder{color:#252525}
+.field textarea{resize:vertical;min-height:75px}
+.field select option{background:var(--surface)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.pl{font-family:var(--sans);font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.55rem;margin-top:1rem}
+.pills{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.35rem}
+.pill{font-family:var(--sans);font-size:.58rem;letter-spacing:.06em;border:.5px solid var(--b2);color:var(--muted);padding:.36rem .8rem;transition:all .2s;background:var(--surface)}
+.pill:hover:not(.sel){border-color:rgba(240,237,232,.18);color:var(--soft)}
+.pill.sel{background:var(--text);color:#080808;border-color:var(--text)}
+.pill .fp{font-size:.5rem;opacity:.4;margin-left:.22rem}
+.dep-box{border:.5px solid var(--b2);border-left:1.5px solid rgba(240,237,232,.18);background:var(--surface);padding:.85rem 1rem;margin:1.1rem 0;font-family:var(--sans);font-size:.63rem;color:var(--muted);line-height:1.8}
+.dep-box strong{color:rgba(240,237,232,.42);font-weight:500}
+.btn-submit{width:100%;padding:1.05rem;background:var(--text);color:#080808;border:none;font-family:var(--sans);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;transition:background .2s,transform .2s;margin-top:.25rem}
+.btn-submit:hover{background:#e0ddd8;transform:translateY(-1px)}
+
+/* CONFIRM */
+.confirm-wrap{text-align:center;padding:2.5rem 1rem 2rem;animation:fadeIn .5s ease both}
+.ci{font-size:1.2rem;color:rgba(74,222,128,.5);display:block;margin-bottom:1rem}
+.cs{font-family:var(--allura);font-size:4.5rem;color:var(--text);display:block;line-height:1;margin-bottom:.2rem}
+.ct{font-family:var(--cg);font-style:italic;font-size:.95rem;color:var(--muted);margin-bottom:1.75rem}
+.conf-card{background:var(--surface);border:.5px solid var(--b2);padding:1.5rem;text-align:left;margin-bottom:1.25rem}
+.cc-row{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:.5px solid var(--border)}
+.cc-row:last-child{border-bottom:none}
+.cc-l{font-family:var(--sans);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cc-v{font-family:var(--cg);font-style:italic;font-size:.9rem;color:var(--text);text-align:right;max-width:58%;line-height:1.4}
+.conf-note{font-family:var(--sans);font-size:.64rem;color:var(--muted);line-height:1.75;margin-bottom:1.5rem}
+.conf-actions{display:flex;flex-direction:column;gap:.5rem}
+.conf-btn{padding:.85rem 1rem;font-family:var(--sans);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;border:.5px solid var(--b2);color:var(--muted);background:var(--surface);transition:all .2s;width:100%;text-align:center}
+.conf-btn:hover{border-color:rgba(240,237,232,.2);color:var(--text)}
+.conf-btn.primary{background:var(--text);color:#080808;border-color:var(--text)}
+.conf-btn.primary:hover{background:#e0ddd8}
+.conf-btn.green{background:var(--gdim);border-color:rgba(74,222,128,.25);color:rgba(74,222,128,.8)}
+
+/* REMINDER */
+.reminder-wrap{background:var(--surface);border:.5px solid var(--b2);padding:2rem}
+.rem-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:.5px solid var(--border)}
+.rem-logo-s{font-family:var(--allura);font-size:2.5rem;color:var(--text)}
+.rem-title-block .rt{font-family:var(--cg);font-size:1.3rem;font-style:italic;color:var(--text)}
+.rem-title-block .rs{font-family:var(--sans);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+.rem-row{display:flex;align-items:center;gap:1rem;padding:.9rem 0;border-bottom:.5px solid var(--border)}
+.rem-row:last-child{border-bottom:none}
+.rem-icon{width:38px;height:38px;border:.5px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.rem-row-label{font-family:var(--sans);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+.rem-row-val{font-family:var(--cg);font-size:1rem;font-style:italic;color:var(--text)}
+.rem-checklist{margin-top:1.5rem;padding-top:1.5rem;border-top:.5px solid var(--border)}
+.rem-check-title{font-family:var(--sans);font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:.85rem}
+.chk-item{display:flex;align-items:flex-start;gap:.75rem;padding:.5rem 0;border-bottom:.5px solid var(--border)}
+.chk-item:last-child{border-bottom:none}
+.chk-box{width:16px;height:16px;border:.5px solid var(--b2);flex-shrink:0;margin-top:.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.chk-box.checked{background:var(--text);border-color:var(--text)}
+.chk-box.checked::after{content:'✓';font-size:.5rem;color:#080808;font-family:var(--sans)}
+.chk-text{font-family:var(--sans);font-size:.68rem;color:var(--soft);line-height:1.55}
+.rem-footer{margin-top:1.5rem;padding:1rem;background:var(--gdim);border:.5px solid rgba(74,222,128,.15);font-family:var(--sans);font-size:.65rem;color:rgba(74,222,128,.65);line-height:1.7}
+
+/* AFTERCARE */
+.aftercare-wrap{background:var(--surface);border:.5px solid var(--b2)}
+.ac-header{padding:1.75rem;border-bottom:.5px solid var(--border)}
+.ac-logo-s{font-family:var(--allura);font-size:2.2rem;color:var(--text);display:block;margin-bottom:.5rem}
+.ac-title{font-family:var(--cg);font-size:1.5rem;font-style:italic;color:var(--text);margin-bottom:.2rem}
+.ac-sub{font-family:var(--sans);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.ac-section{padding:1.5rem 1.75rem;border-bottom:.5px solid var(--border)}
+.ac-section:last-of-type{border-bottom:none}
+.ac-sec-title{font-family:var(--sans);font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.ac-item{display:flex;gap:.85rem;padding:.6rem 0;border-bottom:.5px solid var(--border)}
+.ac-item:last-child{border-bottom:none}
+.ac-num{font-family:var(--cg);font-size:1.1rem;font-style:italic;color:rgba(240,237,232,.15);flex-shrink:0;width:20px}
+.ac-text{font-family:var(--sans);font-size:.7rem;color:var(--soft);line-height:1.65}
+.ac-text strong{color:rgba(240,237,232,.5);font-weight:500}
+.ac-warn{margin:1.25rem 1.75rem;background:var(--rdim);border:.5px solid rgba(248,113,113,.15);padding:.85rem 1rem;font-family:var(--sans);font-size:.65rem;color:rgba(248,113,113,.55);line-height:1.7}
+.ac-footer{padding:1.25rem 1.75rem;border-top:.5px solid var(--border);text-align:center}
+.ac-footer p{font-family:var(--cg);font-style:italic;font-size:.9rem;color:var(--muted)}
+.download-btn{width:100%;padding:1rem;background:var(--text);color:#080808;border:none;font-family:var(--sans);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;transition:background .2s;margin-top:1.25rem}
+.download-btn:hover{background:#e0ddd8}
+
+/* MAP */
+.map-section{margin-top:2rem}
+.map-label{font-family:var(--sans);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.map-fallback{width:100%;padding:2.5rem 1rem;background:var(--surface);border:.5px solid var(--b2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;text-align:center}
+.map-pin{font-size:2rem;opacity:.3}
+.map-fallback p{font-family:var(--sans);font-size:.62rem;color:var(--muted);line-height:1.65}
+.map-fallback a{font-family:var(--sans);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(240,237,232,.35);border:.5px solid var(--b2);padding:.45rem 1rem;transition:all .2s}
+.map-fallback a:hover{border-color:rgba(240,237,232,.2);color:rgba(240,237,232,.6)}
+.map-addr{font-family:var(--sans);font-size:.65rem;color:var(--muted);margin-top:.75rem;line-height:1.7}
+.map-addr strong{color:rgba(240,237,232,.4);font-weight:500}
+.rule{display:flex;align-items:center;gap:.6rem;margin:1.5rem 0}
+.rule span{flex:1;height:.5px;background:var(--border)}
+.rule i{font-style:normal;font-size:.4rem;color:var(--b2)}
+
+/* ADMIN */
+.admin-login{max-width:360px;margin:0 auto;padding:2rem 0}
+.admin-login h2{font-family:var(--cg);font-size:1.6rem;font-style:italic;color:var(--text);margin-bottom:.35rem}
+.admin-login p{font-family:var(--sans);font-size:.65rem;color:var(--muted);margin-bottom:1.5rem}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:.5px solid var(--border)}
+.dash-header h2{font-family:var(--cg);font-size:1.5rem;font-style:italic;color:var(--text)}
+.dash-header p{font-family:var(--sans);font-size:.58rem;color:var(--muted);margin-top:.2rem}
+.logout-btn{background:none;border:.5px solid var(--b2);padding:.4rem .85rem;font-family:var(--sans);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+.logout-btn:hover{border-color:rgba(248,113,113,.3);color:var(--red)}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:2rem}
+.stat-card{background:var(--surface);border:.5px solid var(--b2);padding:1.25rem;text-align:center}
+.stat-num{font-family:var(--cg);font-size:2.2rem;font-style:italic;color:var(--text)}
+.stat-lbl{font-family:var(--sans);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+.dash-sec-title{font-family:var(--sans);font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;padding-bottom:.5rem;border-bottom:.5px solid var(--border)}
+.admin-week{display:grid;grid-template-columns:repeat(6,1fr);gap:.3rem;margin-bottom:1.25rem}
+.awd{text-align:center;padding:.55rem .2rem;border:.5px solid var(--border);background:var(--surface);transition:all .2s}
+.awd.sel{border-color:var(--text);background:var(--text)}
+.awd.sel .awdn,.awd.sel .awdnum{color:#080808}
+.awd.bl{background:var(--rdim);border-color:rgba(248,113,113,.2)}
+.awd.past{opacity:.25;pointer-events:none}
+.awd:not(.past):hover{border-color:rgba(240,237,232,.2)}
+.awdn{font-family:var(--sans);font-size:.44rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.2rem}
+.awdnum{font-family:var(--cg);font-size:.9rem;font-style:italic;color:var(--text);display:block}
+.admin-slots{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:1rem}
+.asc{border:.5px solid var(--b2);background:var(--surface);padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;transition:all .2s}
+.asc.bk{background:rgba(0,0,0,.3)}
+.asc.bl{background:var(--rdim);border-color:rgba(248,113,113,.2)}
+.asc-time{font-family:var(--cg);font-size:.95rem;font-style:italic;color:var(--text)}
+.asc.bl .asc-time{color:rgba(248,113,113,.5)}
+.asc-right{display:flex;align-items:center;gap:.5rem}
+.asc-status{font-family:var(--sans);font-size:.48rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.asc.bk .asc-status{color:#333}
+.asc.bl .asc-status{color:rgba(248,113,113,.5)}
+.toggle-btn{background:none;border:.5px solid var(--b2);padding:.3rem .65rem;font-family:var(--sans);font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);transition:all .2s}
+.toggle-btn:hover{border-color:rgba(248,113,113,.3);color:var(--red)}
+.toggle-btn.unblock:hover{border-color:rgba(74,222,128,.3);color:var(--green)}
+.block-day-btn{background:none;border:.5px solid rgba(248,113,113,.2);padding:.5rem 1rem;font-family:var(--sans);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(248,113,113,.5);transition:all .2s;width:100%;margin-top:.25rem}
+.block-day-btn:hover{border-color:rgba(248,113,113,.5);color:var(--red)}
+.block-day-btn.unblock-day{border-color:rgba(74,222,128,.2);color:rgba(74,222,128,.5)}
+.block-day-btn.unblock-day:hover{border-color:rgba(74,222,128,.5);color:var(--green)}
+.booking-list{display:flex;flex-direction:column;gap:.4rem}
+.bl-item{background:var(--surface);border:.5px solid var(--b2);padding:1rem 1.15rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;animation:slideUp .3s ease both}
+.bl-main .bl-name{font-family:var(--cg);font-size:1rem;font-style:italic;color:var(--text);margin-bottom:.2rem}
+.bl-main .bl-meta{font-family:var(--sans);font-size:.56rem;color:var(--muted);line-height:1.6}
+.bl-slot{font-family:var(--sans);font-size:.58rem;color:rgba(74,222,128,.65);text-align:right;flex-shrink:0}
+.empty-state{text-align:center;padding:2rem;font-family:var(--sans);font-size:.68rem;color:var(--muted);border:.5px solid var(--border);background:var(--surface)}
+.btn-ghost{background:none;border:.5px solid var(--b2);padding:.6rem 1.15rem;font-family:var(--sans);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);transition:all .2s;margin-top:.75rem;width:100%}
+.btn-ghost:hover{border-color:rgba(240,237,232,.2);color:var(--text)}
+
+@media(max-width:480px){
+  .two-col{grid-template-columns:1fr}
+  .slots-grid,.admin-slots{grid-template-columns:1fr}
+  .dash-stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <span class="ls">Inah</span>
+  <span class="lsub">Art Studio · Alicia, Bohol</span>
+  <div class="lbar"><div class="lbar-f"></div></div>
+</div>
+
+<div class="float-msg">
+  <div class="float-tip" id="floatTip">Chat with Inah on Messenger</div>
+  <a href="https://m.me/inahartstudio" target="_blank" class="float-bubble">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.259c0 2.84 1.317 5.381 3.412 7.11V22l3.108-1.706A11.1 11.1 0 0012 20.517c5.523 0 10-4.144 10-9.258S17.523 2 12 2zm1.007 12.453l-2.551-2.72-4.976 2.72 5.467-5.8 2.613 2.72 4.913-2.72-5.466 5.8z"/></svg>
+  </a>
+</div>
+
+<header>
+  <div class="logo">
+    <span class="logo-s">Inah</span>
+    <div class="logo-r"><span></span><i>✦</i><span></span></div>
+    <span class="logo-w">Art Studio</span>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-info">
+      <p>Poblacion, Alicia, Bohol</p>
+      <p>Mon–Sat &nbsp;·&nbsp; 10 AM–9 PM</p>
+      <div class="live-badge"><span class="live-dot"></span>Booking open</div>
+    </div>
+    <button class="admin-btn" onclick="showView('AdminLogin')">Admin</button>
+  </div>
+</header>
+
+<main>
+<div class="nav-tabs" id="mainTabs">
+  <button class="nav-tab active" onclick="showTab('book')">Book a Session</button>
+  <button class="nav-tab" onclick="showTab('aftercare')">Aftercare Guide</button>
+  <button class="nav-tab" id="reminderTab" style="display:none" onclick="showTab('reminder')">My Appointment</button>
+</div>
+
+<!-- BOOKING -->
+<div class="view active" id="viewBook">
+  <p class="eyebrow">Online Booking</p>
+  <h1 class="page-title">Pick your <strong>date & time.</strong></h1>
+  <p class="page-sub">4 slots per day, Monday to Saturday. Select a date then choose your time.</p>
+
+  <div class="cal-nav">
+    <button onclick="shiftWeek(-1)">&#8592;</button>
+    <div style="flex:1">
+      <div class="cal-date-main" id="weekLabel"></div>
+      <div class="cal-date-sub" id="weekSub"></div>
+    </div>
+    <button onclick="shiftWeek(1)">&#8594;</button>
+  </div>
+  <div class="week-strip" id="weekStrip"></div>
+
+  <div class="slots-hdr">
+    <span class="slots-lbl" id="slotsLbl">Select a date above</span>
+    <div class="legend">
+      <div class="leg"><span class="leg-dot av"></span>Available</div>
+      <div class="leg"><span class="leg-dot bk"></span>Booked</div>
+      <div class="leg"><span class="leg-dot bl"></span>Blocked</div>
+    </div>
+  </div>
+  <div id="slotsArea"></div>
+
+  <div class="sel-banner" id="selBanner">
+    <div class="sb-txt" id="selBannerTxt"></div>
+    <button class="sb-clr" onclick="clearSlot()">Clear ✕</button>
+  </div>
+
+  <div class="form-wrap" id="formWrap">
+    <p class="form-eyebrow">Your details</p>
+    <div class="field"><label>Full Name</label><input type="text" id="f-name" placeholder="Your full name"/></div>
+    <div class="field"><label>Messenger / Facebook Name</label><input type="text" id="f-contact" placeholder="I'll send your confirmation here"/></div>
+    <div class="two-col">
+      <div class="field"><label>Where are you from?</label><input type="text" id="f-location" placeholder="City / Town"/></div>
+      <div class="field"><label>Budget <span style="opacity:.28">(optional)</span></label><input type="text" id="f-budget" placeholder="₱800"/></div>
+    </div>
+    <div class="pl" style="margin-top:.5rem">Flash design</div>
+    <div class="pills" id="flashPills">
+      <button class="pill" data-name="Butterfly Fineline" onclick="selFlash(this)">Butterfly Fineline<span class="fp">₱800+</span></button>
+      <button class="pill" data-name="Star Cluster" onclick="selFlash(this)">Star Cluster<span class="fp">₱600+</span></button>
+      <button class="pill" data-name="Floral Sprig" onclick="selFlash(this)">Floral Sprig<span class="fp">₱900+</span></button>
+      <button class="pill" data-name="Moon Phase" onclick="selFlash(this)">Moon Phase<span class="fp">₱1,000+</span></button>
+      <button class="pill" data-name="Minimal Snake" onclick="selFlash(this)">Minimal Snake<span class="fp">₱1,200+</span></button>
+      <button class="pill" data-name="Single Bloom" onclick="selFlash(this)">Single Bloom<span class="fp">₱700+</span></button>
+      <button class="pill" data-name="Custom Design" onclick="selFlash(this)">Custom Design</button>
+    </div>
+    <div class="field"><label>Describe your idea <span style="opacity:.28">(optional if flash)</span></label>
+      <textarea id="f-design" placeholder="e.g. small butterfly inner wrist, delicate fineline. I'll send ref photos via Messenger." rows="2"></textarea>
+    </div>
+    <div class="pl">Size</div>
+    <div class="pills">
+      <button class="pill" data-val="Tiny 1–2in" onclick="selPill(this,'size')">Tiny · 1–2in</button>
+      <button class="pill" data-val="Small 2–3in" onclick="selPill(this,'size')">Small · 2–3in</button>
+      <button class="pill" data-val="Medium 3–5in" onclick="selPill(this,'size')">Medium · 3–5in</button>
+      <button class="pill" data-val="Large 5+in" onclick="selPill(this,'size')">Large · 5+in</button>
+    </div>
+    <div class="pl">Placement</div>
+    <div class="pills">
+      <button class="pill" data-val="Wrist" onclick="selPill(this,'place')">Wrist</button>
+      <button class="pill" data-val="Ankle" onclick="selPill(this,'place')">Ankle</button>
+      <button class="pill" data-val="Forearm" onclick="selPill(this,'place')">Forearm</button>
+      <button class="pill" data-val="Calf" onclick="selPill(this,'place')">Calf</button>
+      <button class="pill" data-val="Collarbone" onclick="selPill(this,'place')">Collarbone</button>
+      <button class="pill" data-val="Behind ear" onclick="selPill(this,'place')">Behind ear</button>
+      <button class="pill" data-val="Ribcage" onclick="selPill(this,'place')">Ribcage</button>
+      <button class="pill" data-val="Finger" onclick="selPill(this,'place')">Finger</button>
+      <button class="pill" data-val="Shoulder" onclick="selPill(this,'place')">Shoulder</button>
+      <button class="pill" data-val="Other" onclick="selPill(this,'place')">Other</button>
+    </div>
+    <div class="field" style="margin-top:1rem"><label>First timer?</label>
+      <select id="f-firstimer"><option value="">Select</option><option>Yes — first tattoo</option><option>No — I have tattoos</option></select>
+    </div>
+    <div class="field"><label>Anything else? <span style="opacity:.28">(optional)</span></label>
+      <textarea id="f-notes" placeholder="Special requests, concerns, anything I should know." rows="2"></textarea>
+    </div>
+    <div class="dep-box"><strong>Deposit required to lock in your slot.</strong> ₱200 and up — non-refundable. Rescheduling is fine with 24–48 hours notice. No-shows forfeit the deposit.</div>
+    <button class="btn-submit" onclick="submitBooking()">Confirm Booking ✦</button>
+    <p style="margin-top:.7rem;text-align:center;font-family:var(--sans);font-size:.58rem;color:var(--muted)">I'll reply within 30 min – 3 hours via Messenger.</p>
+  </div>
+
+  <div class="map-section">
+    <div class="rule"><span></span><i>✦</i><span></span></div>
+    <div class="map-label">Studio Location</div>
+    <div class="map-fallback">
+      <div class="map-pin">📍</div>
+      <p>Poblacion, Alicia, Bohol<br>In front of Cañeta Learning Center</p>
+      <a href="https://maps.google.com/?q=Alicia+Bohol+Philippines" target="_blank">Open in Google Maps →</a>
+    </div>
+    <p class="map-addr"><strong>Address:</strong> Poblacion, Alicia, Bohol<br><strong>Landmark:</strong> In front of Cañeta Learning Center</p>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="view" id="viewConfirm">
+  <div class="confirm-wrap">
+    <span class="ci">✦</span>
+    <span class="cs">You're in.</span>
+    <p class="ct">Booking request sent.</p>
+    <div class="conf-card" id="confirmCard"></div>
+    <p class="conf-note">I'll message you on Messenger within 30 min to 3 hours to confirm your slot and send deposit details. Once settled, your slot is officially locked.</p>
+    <div class="conf-actions">
+      <a href="https://m.me/inahartstudio" target="_blank" class="conf-btn primary">Message on Messenger →</a>
+      <button class="conf-btn green" onclick="showReminderPage()">📅 Save My Appointment Details</button>
+      <button class="conf-btn" onclick="showTab('aftercare')">⬇ View Aftercare Guide</button>
+      <button class="conf-btn" onclick="resetBooking()">Book Another Slot</button>
+    </div>
+  </div>
+</div>
+
+<!-- AFTERCARE -->
+<div class="view" id="viewAftercare">
+  <div class="aftercare-wrap">
+    <div class="ac-header">
+      <span class="ac-logo-s">Inah</span>
+      <div class="ac-title">Tattoo Aftercare Guide</div>
+      <div class="ac-sub">Inah Art Studio · Alicia, Bohol</div>
+      <p style="font-family:var(--sans);font-size:.65rem;color:var(--muted);line-height:1.7;margin-top:.5rem">How you care for your tattoo in the first few weeks determines how it looks for life. Follow these steps.</p>
+    </div>
+    <div class="ac-section">
+      <div class="ac-sec-title">First 24 Hours</div>
+      <div class="ac-item"><span class="ac-num">1</span><span class="ac-text"><strong>Keep the wrap on</strong> for 2 to 4 hours after your session.</span></div>
+      <div class="ac-item"><span class="ac-num">2</span><span class="ac-text"><strong>Wash gently</strong> with unscented antibacterial soap and lukewarm water using clean hands only.</span></div>
+      <div class="ac-item"><span class="ac-num">3</span><span class="ac-text"><strong>Pat dry</strong> with a clean paper towel. Never rub.</span></div>
+      <div class="ac-item"><span class="ac-num">4</span><span class="ac-text"><strong>Apply a thin layer</strong> of unscented lotion (Lubriderm, Cetaphil, or similar).</span></div>
+    </div>
+    <div class="ac-section">
+      <div class="ac-sec-title">Days 2 to 14</div>
+      <div class="ac-item"><span class="ac-num">1</span><span class="ac-text"><strong>Moisturize 2 to 3 times daily.</strong></span></div>
+      <div class="ac-item"><span class="ac-num">2</span><span class="ac-text"><strong>No soaking</strong> — no pools, ocean, or baths. Quick showers only.</span></div>
+      <div class="ac-item"><span class="ac-num">3</span><span class="ac-text"><strong>Don't pick or scratch</strong> when it starts to peel. Let it flake naturally.</span></div>
+      <div class="ac-item"><span class="ac-num">4</span><span class="ac-text"><strong>Avoid tight clothing</strong> over the tattoo area.</span></div>
+    </div>
+    <div class="ac-section">
+      <div class="ac-sec-title">Long-term</div>
+      <div class="ac-item"><span class="ac-num">1</span><span class="ac-text"><strong>SPF 30+</strong> whenever the tattoo is exposed to sun. Keeps lines sharp for years.</span></div>
+      <div class="ac-item"><span class="ac-num">2</span><span class="ac-text"><strong>Full healing</strong> takes 2 to 4 weeks on the surface, up to 3 months deep.</span></div>
+      <div class="ac-item"><span class="ac-num">3</span><span class="ac-text"><strong>Touch-ups available</strong> after full healing. Message me to arrange.</span></div>
+    </div>
+    <div class="ac-warn">⚠ See a doctor immediately if you notice excessive swelling, pus, or a fever.</div>
+    <div class="ac-footer"><p>Questions? I'm always just a message away.</p></div>
+  </div>
+  <button class="download-btn" onclick="window.print()">⬇ Save / Print Guide</button>
+</div>
+
+<!-- REMINDER -->
+<div class="view" id="viewReminder">
+  <p class="eyebrow">My Appointment</p>
+  <h2 class="page-title">Your <strong>booking details.</strong></h2>
+  <div class="reminder-wrap" id="reminderContent"></div>
+  <button class="btn-ghost" onclick="showTab('book')">← Back to Booking</button>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="view" id="viewAdminLogin">
+  <div class="admin-login">
+    <h2>Admin Access</h2>
+    <p>Enter your password to manage bookings and availability.</p>
+    <div class="field"><label>Password</label><input type="password" id="adminPass" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdmin()"/></div>
+    <button class="btn-submit" onclick="checkAdmin()">Sign In →</button>
+    <button class="btn-ghost" onclick="showTab('book')">← Back</button>
+  </div>
+</div>
+
+<!-- ADMIN DASH -->
+<div class="view" id="viewAdmin">
+  <div class="dash-header">
+    <div><h2>Dashboard</h2><p>Manage bookings and availability</p></div>
+    <button class="logout-btn" onclick="adminLogout()">Sign Out</button>
+  </div>
+  <div class="dash-stats">
+    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total Bookings</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-today">0</div><div class="stat-lbl">Today's Booked</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-avail">4</div><div class="stat-lbl">Available Today</div></div>
+  </div>
+  <div style="margin-bottom:2rem">
+    <div class="dash-sec-title">Manage Availability</div>
+    <div class="cal-nav" style="margin-bottom:.85rem">
+      <button onclick="adminShiftWeek(-1)">&#8592;</button>
+      <div style="flex:1"><div class="cal-date-main" id="adminWeekLabel"></div></div>
+      <button onclick="adminShiftWeek(1)">&#8594;</button>
+    </div>
+    <div class="admin-week" id="adminWeekStrip"></div>
+    <div id="adminSlotsArea"></div>
+  </div>
+  <div>
+    <div class="dash-sec-title">All Bookings <span id="bookingCount" style="opacity:.4;font-weight:normal"></span></div>
+    <div class="booking-list" id="bookingList"></div>
+  </div>
+</div>
+
+</main>
+
+<footer style="border-top:.5px solid var(--border);padding:2rem 1.5rem;text-align:center;max-width:660px;margin:0 auto">
+  <div style="font-family:var(--allura);font-size:2.2rem;color:rgba(240,237,232,.15)">Inah</div>
+  <div style="font-family:var(--cg);font-size:.38rem;letter-spacing:.26em;text-transform:uppercase;color:rgba(240,237,232,.1);margin-bottom:1rem">Art Studio</div>
+  <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:.75rem">
+    <a href="#" style="font-family:var(--sans);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Facebook</a>
+    <a href="#" style="font-family:var(--sans);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">Instagram</a>
+    <a href="#" style="font-family:var(--sans);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)">TikTok</a>
+  </div>
+  <p style="font-family:var(--sans);font-size:.54rem;color:#252525;line-height:1.85">Poblacion, Alicia, Bohol · In front of Cañeta Learning Center<br>Monday to Saturday · 10:00 AM – 9:00 PM</p>
+  <p style="margin-top:.85rem;font-family:var(--sans);font-size:.58rem;color:#252525">Not ready? <a href="https://m.me/inahartstudio" style="color:var(--muted);text-decoration:underline">Message me on Messenger →</a></p>
+</footer>
+
+<script>
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('gone'),1000))
+setTimeout(()=>{const t=document.getElementById('floatTip');if(t)t.style.opacity='0'},3500)
+
+const SLOTS=['10:00 AM','1:00 PM','4:00 PM','7:00 PM']
+const bookedSlots={} // key: "YYYY-MM-DD" → array of booking objects
+const blockedDates={} // key: "YYYY-MM-DD" → true or array of time strings
+const S={dateKey:null,slot:null,flash:'',size:'',placement:'',booking:null}
+let weekOffset=0, adminWeekOffset=0, adminSelKey=null
+
+// ── DATE HELPERS ──
+// Returns a LOCAL date string "YYYY-MM-DD" — no UTC shift
+function toKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0') }
+// Parse a key back to a local date object safely
+function fromKey(k){ const[y,m,d]=k.split('-').map(Number); return new Date(y,m-1,d) }
+function isToday(k){ return toKey(new Date())===k }
+function isPastKey(k){ const t=new Date(); t.setHours(0,0,0,0); return fromKey(k)<t }
+function isSunKey(k){ return fromKey(k).getDay()===0 }
+function fmtKey(k){ return fromKey(k).toLocaleDateString('en-PH',{weekday:'long',month:'long',day:'numeric',year:'numeric'}) }
+function fmtShort(k){ return fromKey(k).toLocaleDateString('en-PH',{weekday:'short',month:'short',day:'numeric'}) }
+
+// Returns the Monday of the current week + offset weeks
+// Uses local date arithmetic only
+function getMondayOfWeek(offset){
+  const today=new Date(); today.setHours(0,0,0,0)
+  const dow=today.getDay() // 0=Sun,1=Mon,...6=Sat
+  const daysToMon = dow===0 ? 1 : (dow===1 ? 0 : -(dow-1))
+  const monday=new Date(today)
+  monday.setDate(today.getDate() + daysToMon + offset*7)
+  return monday
+}
+
+// Build array of 6 date keys for Mon–Sat of the week
+function getWeekKeys(offset){
+  const mon=getMondayOfWeek(offset)
+  const keys=[]
+  for(let i=0;i<6;i++){
+    const d=new Date(mon); d.setDate(mon.getDate()+i); keys.push(toKey(d))
+  }
+  return keys
+}
+
+const DAYNAMES=['Mon','Tue','Wed','Thu','Fri','Sat']
+
+// ── VIEWS / TABS ──
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'))
+  document.getElementById('view'+v).classList.add('active')
+  const bookingViews=['Book','Confirm','Aftercare','Reminder']
+  document.getElementById('mainTabs').style.display=bookingViews.includes(v)?'flex':'none'
+}
+function showTab(t){
+  const map={book:'Book',aftercare:'Aftercare',reminder:'Reminder'}
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',['book','aftercare','reminder'][i]===t))
+  showView(map[t])
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+// ── RENDER WEEK (client) ──
+function renderWeek(){
+  const strip=document.getElementById('weekStrip')
+  strip.innerHTML=''
+  const keys=getWeekKeys(weekOffset)
+  const mon=fromKey(keys[0]), sat=fromKey(keys[5])
+  document.getElementById('weekLabel').textContent=mon.toLocaleDateString('en-PH',{month:'long',year:'numeric'})
+  document.getElementById('weekSub').textContent=
+    mon.toLocaleDateString('en-PH',{month:'short',day:'numeric'})+' – '+
+    sat.toLocaleDateString('en-PH',{month:'short',day:'numeric'})
+
+  keys.forEach((key,i)=>{
+    const past=isPastKey(key)
+    const bk=bookedSlots[key]||[]
+    const bl=blockedDates[key]
+    const isFullBlock=bl===true
+    const isSel=S.dateKey===key
+    const el=document.createElement('div')
+    el.className='wd'+(past?' past':'')+(isSel?' sel':'')+(isFullBlock?' blocked':'')
+    el.innerHTML=`
+      <span class="wdn">${DAYNAMES[i]}</span>
+      <span class="wdnum">${fromKey(key).getDate()}</span>
+      <div class="wddots">${past?'':SLOTS.map(t=>{
+        const isBl=isFullBlock||(Array.isArray(bl)&&bl.includes(t))
+        const isBk=bk.find(b=>b.time===t)
+        return `<span class="${isBk?'bk':isBl?'bl':''}"></span>`
+      }).join('')}</div>
+    `
+    if(!past){
+      el.onclick=()=>{
+        S.dateKey=key; S.slot=null
+        clearSlotUI()
+        renderWeek()
+        renderSlots()
+      }
+    }
+    strip.appendChild(el)
+  })
+}
+
+function shiftWeek(d){
+  if(weekOffset+d<0)return
+  weekOffset+=d
+  S.dateKey=null; S.slot=null
+  clearSlotUI()
+  document.getElementById('slotsArea').innerHTML=''
+  document.getElementById('slotsLbl').textContent='Select a date above'
+  renderWeek()
+}
+
+// ── RENDER SLOTS (client) ──
+function renderSlots(){
+  const area=document.getElementById('slotsArea')
+  const lbl=document.getElementById('slotsLbl')
+  area.innerHTML='' // always clear first
+  if(!S.dateKey){lbl.textContent='Select a date above';return}
+  lbl.textContent=fmtKey(S.dateKey).toUpperCase()
+  const bk=bookedSlots[S.dateKey]||[]
+  const bl=blockedDates[S.dateKey]
+  const grid=document.createElement('div')
+  grid.className='slots-grid'
+  SLOTS.forEach((t,i)=>{
+    const isBk=!!bk.find(b=>b.time===t)
+    const isBl=bl===true||(Array.isArray(bl)&&bl.includes(t))
+    const isSel=S.slot===t
+    const card=document.createElement('div')
+    card.style.animation=`slideUp .25s ${i*.06}s ease both`
+    card.className='sc '+(isBk?'bk':isBl?'bl':isSel?'av-sel':'av')
+    card.innerHTML=`
+      <span class="sc-time">${t}</span>
+      <div class="sc-status"><span class="dot"></span><span class="stxt">${isBk?'Booked':isBl?'Blocked':isSel?'Selected':'Available'}</span></div>
+    `
+    if(!isBk&&!isBl){
+      card.onclick=()=>{
+        S.slot=t
+        updateBanner()
+        renderSlots()
+        document.getElementById('formWrap').style.display='block'
+        setTimeout(()=>document.getElementById('formWrap').scrollIntoView({behavior:'smooth',block:'start'}),80)
+      }
+    }
+    grid.appendChild(card)
+  })
+  area.appendChild(grid)
+}
+
+function updateBanner(){
+  const b=document.getElementById('selBanner'), t=document.getElementById('selBannerTxt')
+  if(S.slot&&S.dateKey){
+    t.innerHTML=`<strong>${S.slot}</strong> · ${fmtShort(S.dateKey)}`
+    b.classList.add('show')
+  } else b.classList.remove('show')
+}
+function clearSlotUI(){
+  S.slot=null
+  document.getElementById('selBanner').classList.remove('show')
+  document.getElementById('formWrap').style.display='none'
+}
+function clearSlot(){clearSlotUI();renderSlots()}
+
+// ── PILLS ──
+function selFlash(btn){
+  document.querySelectorAll('#flashPills .pill').forEach(b=>b.classList.remove('sel'))
+  btn.classList.add('sel'); S.flash=btn.dataset.name
+  document.getElementById('f-design').placeholder=
+    S.flash==='Custom Design'?'Describe your custom idea...':`I'd like the ${S.flash}. Let me know if you need anything.`
+}
+function selPill(btn,type){
+  btn.parentElement.querySelectorAll('.pill').forEach(b=>b.classList.remove('sel'))
+  btn.classList.add('sel')
+  if(type==='size')S.size=btn.dataset.val; else S.placement=btn.dataset.val
+}
+
+// ── SUBMIT ──
+function submitBooking(){
+  if(!S.slot||!S.dateKey){alert('Please pick a time slot first.');return}
+  const name=document.getElementById('f-name').value.trim()
+  const contact=document.getElementById('f-contact').value.trim()
+  if(!name){alert('Please enter your name.');return}
+  if(!contact){alert('Please enter your Messenger name.');return}
+  const booking={
+    time:S.slot, date:S.dateKey, name, contact,
+    design:document.getElementById('f-design').value.trim(),
+    size:S.size, placement:S.placement,
+    location:document.getElementById('f-location').value.trim(),
+    budget:document.getElementById('f-budget').value.trim(),
+    firstimer:document.getElementById('f-firstimer').value,
+    notes:document.getElementById('f-notes').value.trim(),
+    flash:S.flash, id:'BK'+Date.now()
+  }
+  if(!bookedSlots[S.dateKey])bookedSlots[S.dateKey]=[]
+  bookedSlots[S.dateKey].push(booking)
+  S.booking=booking
+  buildConfirm(booking)
+  renderWeek()
+  showView('Confirm')
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+function buildConfirm(b){
+  const rows=[
+    ['Date',fmtKey(b.date)],['Time',b.time],['Name',b.name],['Messenger',b.contact],
+    ['Design',(b.flash&&b.flash!=='Custom Design'?b.flash+' (Flash)':b.design)||'—'],
+    ['Size',b.size||'—'],['Placement',b.placement||'—'],
+    ['From',b.location||'—'],['Budget',b.budget||'—'],['First timer',b.firstimer||'—'],
+  ]
+  document.getElementById('confirmCard').innerHTML=rows.map(([l,v])=>
+    `<div class="cc-row"><span class="cc-l">${l}</span><span class="cc-v">${v}</span></div>`
+  ).join('')
+}
+
+function showReminderPage(){
+  if(!S.booking)return
+  const b=S.booking
+  document.getElementById('reminderContent').innerHTML=`
+    <div class="rem-header">
+      <span class="rem-logo-s">Inah</span>
+      <div class="rem-title-block"><div class="rt">Your Appointment</div><div class="rs">Inah Art Studio · Alicia, Bohol</div></div>
+    </div>
+    <div class="rem-row"><div class="rem-icon">📅</div><div><div class="rem-row-label">Date</div><div class="rem-row-val">${fmtKey(b.date)}</div></div></div>
+    <div class="rem-row"><div class="rem-icon">🕐</div><div><div class="rem-row-label">Time</div><div class="rem-row-val">${b.time}</div></div></div>
+    <div class="rem-row"><div class="rem-icon">✍</div><div><div class="rem-row-label">Design</div><div class="rem-row-val">${(b.flash&&b.flash!=='Custom Design'?b.flash:b.design)||'Custom'}</div></div></div>
+    <div class="rem-row"><div class="rem-icon">📍</div><div><div class="rem-row-label">Studio</div><div class="rem-row-val">Poblacion, Alicia, Bohol</div></div></div>
+    <div class="rem-checklist">
+      <div class="rem-check-title">Pre-appointment checklist</div>
+      ${['Eat a proper meal at least 1 hour before','Stay well-hydrated','Moisturize the placement area the day before','Wear comfortable clothing with easy access to placement','Avoid alcohol 24 hours before','Bring valid ID (18+ required)','Send deposit to confirm your slot','Message Inah to confirm 24 hours before'].map(txt=>
+        `<div class="chk-item"><div class="chk-box" onclick="this.classList.toggle('checked')"></div><span class="chk-text">${txt}</span></div>`
+      ).join('')}
+    </div>
+    <div class="rem-footer">💬 Questions? Message Inah on Messenger anytime. Rescheduling: 24–48 hrs notice required.</div>
+  `
+  document.getElementById('reminderTab').style.display='block'
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',i===2))
+  showView('Reminder')
+  window.scrollTo({top:0,behavior:'smooth'})
+}
+
+function resetBooking(){
+  S.dateKey=null; S.slot=null; S.flash=''; S.size=''; S.placement=''; weekOffset=0
+  document.getElementById('formWrap').style.display='none'
+  document.getElementById('slotsArea').innerHTML=''
+  document.getElementById('slotsLbl').textContent='Select a date above'
+  document.getElementById('selBanner').classList.remove('show')
+  ;['f-name','f-contact','f-location','f-budget','f-design','f-notes'].forEach(id=>{document.getElementById(id).value=''})
+  document.getElementById('f-firstimer').value=''
+  document.querySelectorAll('.pill.sel').forEach(p=>p.classList.remove('sel'))
+  renderWeek()
+  showTab('book')
+}
+
+// ── ADMIN ──
+function checkAdmin(){
+  if(document.getElementById('adminPass').value==='inah2025'){
+    showView('Admin')
+    document.getElementById('mainTabs').style.display='none'
+    updateStats(); renderAdminWeek(); renderBookingList()
+  } else {
+    alert('Incorrect password.')
+    document.getElementById('adminPass').value=''
+  }
+}
+function adminLogout(){showTab('book')}
+
+function updateStats(){
+  const todayKey=toKey(new Date())
+  const bkToday=(bookedSlots[todayKey]||[]).length
+  const bl=blockedDates[todayKey]
+  const blToday=bl===true?4:(Array.isArray(bl)?bl.length:0)
+  const total=Object.values(bookedSlots).reduce((a,b)=>a+b.length,0)
+  document.getElementById('stat-total').textContent=total
+  document.getElementById('stat-today').textContent=bkToday
+  document.getElementById('stat-avail').textContent=Math.max(0,4-bkToday-blToday)
+}
+
+function renderAdminWeek(){
+  const strip=document.getElementById('adminWeekStrip')
+  strip.innerHTML=''
+  const keys=getWeekKeys(adminWeekOffset)
+  const mon=fromKey(keys[0])
+  document.getElementById('adminWeekLabel').textContent=mon.toLocaleDateString('en-PH',{month:'long',year:'numeric'})
+  keys.forEach((key,i)=>{
+    const past=isPastKey(key)
+    const isBl=blockedDates[key]===true
+    const isSel=adminSelKey===key
+    const el=document.createElement('div')
+    el.className='awd'+(past?' past':'')+(isSel?' sel':'')+(isBl?' bl':'')
+    el.innerHTML=`<span class="awdn">${DAYNAMES[i]}</span><span class="awdnum">${fromKey(key).getDate()}</span>`
+    if(!past){el.onclick=()=>{adminSelKey=key;renderAdminWeek();renderAdminSlots()}}
+    strip.appendChild(el)
+  })
+}
+function adminShiftWeek(d){adminWeekOffset+=d;adminSelKey=null;document.getElementById('adminSlotsArea').innerHTML='';renderAdminWeek()}
+
+function renderAdminSlots(){
+  const area=document.getElementById('adminSlotsArea')
+  if(!adminSelKey){area.innerHTML='';return}
+  const bk=bookedSlots[adminSelKey]||[], bl=blockedDates[adminSelKey]
+  const isFullBlock=bl===true
+  let html=`<div class="admin-slots">`
+  SLOTS.forEach(t=>{
+    const booking=bk.find(b=>b.time===t)
+    const isSlotBl=isFullBlock||(Array.isArray(bl)&&bl.includes(t))
+    const cls=booking?'bk':isSlotBl?'bl':''
+    html+=`<div class="asc ${cls}">
+      <span class="asc-time">${t}</span>
+      <div class="asc-right">
+        <span class="asc-status">${booking?booking.name.split(' ')[0]:isSlotBl?'Blocked':'Available'}</span>
+        ${!booking?`<button class="toggle-btn ${isSlotBl?'unblock':''}" onclick="toggleSlotBlock('${adminSelKey}','${t}')">${isSlotBl?'Unblock':'Block'}</button>`:''}
+      </div>
+    </div>`
+  })
+  html+=`</div>`
+  html+=`<button class="block-day-btn ${isFullBlock?'unblock-day':''}" onclick="toggleDayBlock('${adminSelKey}')">${isFullBlock?'✓ Unblock Entire Day':'✕ Block Entire Day'}</button>`
+  area.innerHTML=html
+}
+
+function toggleSlotBlock(key,time){
+  if(!blockedDates[key])blockedDates[key]=[]
+  if(blockedDates[key]===true){blockedDates[key]=[time]}
+  else if(blockedDates[key].includes(time)){
+    blockedDates[key]=blockedDates[key].filter(t=>t!==time)
+    if(blockedDates[key].length===0)delete blockedDates[key]
+  } else blockedDates[key].push(time)
+  renderAdminWeek(); renderAdminSlots(); updateStats(); renderWeek()
+}
+function toggleDayBlock(key){
+  if(blockedDates[key]===true)delete blockedDates[key]
+  else blockedDates[key]=true
+  renderAdminWeek(); renderAdminSlots(); updateStats(); renderWeek()
+}
+
+function renderBookingList(){
+  const list=document.getElementById('bookingList')
+  const all=[]
+  Object.entries(bookedSlots).forEach(([date,bks])=>bks.forEach(b=>all.push({...b,date})))
+  all.sort((a,b)=>a.date.localeCompare(b.date))
+  document.getElementById('bookingCount').textContent=`(${all.length})`
+  if(all.length===0){list.innerHTML='<div class="empty-state">No bookings yet.</div>';return}
+  list.innerHTML=all.map((b,idx)=>`
+    <div class="bl-item" style="animation-delay:${idx*.04}s">
+      <div class="bl-main">
+        <div class="bl-name">${b.name}</div>
+        <div class="bl-meta">${b.contact} · ${b.location||'—'} · ${(b.flash&&b.flash!=='Custom Design'?b.flash:b.design)||'Custom'}<br>${b.size||'?'} · ${b.placement||'?'}${b.firstimer?' · '+b.firstimer:''}</div>
+      </div>
+      <div class="bl-slot">${fmtShort(b.date)}<br>${b.time}</div>
+    </div>
+  `).join('')
+}
+
+// INIT
+renderWeek()
+</script>
+</body>
+</html>
